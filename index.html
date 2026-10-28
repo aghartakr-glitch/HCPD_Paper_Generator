@@ -638,7 +638,7 @@ const LINES=27;                    // Row 4–9 프레임에 들어가는 줄 �
 const BX=colX(1), BW=colX(3)+CW-colX(1);   // 본문 x 60.5, 폭 135.5
 const AW=CW;                        // 주소 칸 폭 42.5
 const CLOSE_GAP=26.9, GAP_BOX=24, GAP_DY=0.6;   // 본문 끝 → 맺음말 간격 가이드(24mm)
-const SIG_W=CW, SIG_H=RH, SIG_DY2=2;            // 서명 이미지: 서명자 이름 아래 2mm, 최대 1단×1행(42.5×15.5mm)
+const SIG_W=CW, SIG_H=RH, SIG_DY2=12*25.4/72;   // 서명 이미지: 서명자 이름 기준선 아래 한 줄(4.23mm), 최대 1단×1행(42.5×15.5mm)
 const BODY_PT=8, HEAD_PT=10;
 
 const $=id=>document.getElementById(id);
