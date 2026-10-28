@@ -120,7 +120,7 @@ td:last-child{font-family:var(--font-mono);font-size:12px;font-variant-numeric:t
       </section>
 
       <section class="blk">
-        <h2><span data-i="hSign"></span><small>24 × 24 mm</small></h2>
+        <h2><span data-i="hSign"></span><small>42.5 × 15.5 mm</small></h2>
         <div class="row2">
           <label><span data-i="lClose"></span><input type="text" id="closing" autocomplete="off"></label>
           <label><span data-i="lSigner"></span><input type="text" id="signer" autocomplete="off"></label>
@@ -637,7 +637,8 @@ const FROM_SHIFT=3*(RH+GUT);       // From 블록 = To + 3행 (58.5mm)
 const LINES=27;                    // Row 4–9 프레임에 들어가는 줄 수
 const BX=colX(1), BW=colX(3)+CW-colX(1);   // 본문 x 60.5, 폭 135.5
 const AW=CW;                        // 주소 칸 폭 42.5
-const CLOSE_GAP=26.9, SIG=24, SIG_DY=0.6;
+const CLOSE_GAP=26.9, GAP_BOX=24, GAP_DY=0.6;   // 본문 끝 → 맺음말 간격 가이드(24mm)
+const SIG_W=CW, SIG_H=RH, SIG_DY2=2;            // 서명 이미지: 서명자 이름 아래 2mm, 최대 1단×1행(42.5×15.5mm)
 const BODY_PT=8, HEAD_PT=10;
 
 const $=id=>document.getElementById(id);
@@ -655,7 +656,7 @@ ko:{h1:'HCDT 레터 생성기',sub:'학과 서식(A4) 그리드에 맞춰 편지
 hTo:'받는 사람 (To)',hFrom:'보내는 사람 (From)',lName:'이름',lTitle:'직함',lAddr:'소속 · 주소 (줄바꿈 그대로 조판)',lCt:'연락처 (빈 칸은 인쇄 안 됨 · × 로 삭제)',ctDel:'이 연락처 삭제',ctPh:{Email:'name@unist.ac.kr',Tel:'+82 52 217 0000',Mobile:'+82 10 0000 0000',Fax:'+82 52 217 0000',Web:'hcdt.unist.ac.kr'},fromMoved:'To 정보가 길어 From을 한 행씩 아래로 내림',
 hBody:'본문',lSal:'인사말',lBody:'본문 (빈 줄 = 문단 간격)',bodyNote:'입력한 줄바꿈은 그대로, 긴 줄은 135.5mm 폭에서 자동 줄바꿈. 쪽당 27줄, 새 쪽 첫머리 빈 줄은 생략.',
 exShort:'짧은 예시',exLong:'긴 예시',clear:'본문 비우기',
-hSign:'서명',lClose:'맺음말',lSigner:'서명자',lSigImg:'서명 이미지 (PNG·JPG, 24×24mm 칸에 맞춤)',sigClear:'서명 이미지 삭제',
+hSign:'서명',lClose:'맺음말',lSigner:'서명자',lSigImg:'서명 이미지 (PNG·JPG) — 서명자 이름 아래, 최대 42.5×15.5mm(1단×1행)에 비율 유지로 맞춤',sigClear:'서명 이미지 삭제',
 hExp:'내보내기',optGridPdf:'PDF에 그리드·서명 가이드 포함',exPdf:'PDF 저장',
 optGrid:'그리드 보기',optPn:'쪽번호',pages:n=>`${n}쪽`,lines:(n,m)=>`본문 ${n}줄 · 마지막 쪽 ${m}/27줄`,
 hSpec:'그리드 · 서체 규격',thItem:'항목',thVal:'값',sPage:'판형',sMargin:'여백',sCol:'세로 단 (폭 · 간격)',sRow:'가로 행 (높이 · 간격)',sBodyT:'본문',sHeadT:'제목 (To / From / 인사말)',sColor:'로고 · 패턴 색',sZone:'영역 배치',
@@ -666,7 +667,7 @@ en:{h1:'HCDT Letter Generator',sub:'Typesets a letter on the department A4 grid 
 hTo:'To',hFrom:'From',lName:'Name',lTitle:'Title',lAddr:'Affiliation · address (line breaks kept)',lCt:'Contact (empty rows are not printed · × removes)',ctDel:'Remove this contact',ctPh:{Email:'name@unist.ac.kr',Tel:'+82 52 217 0000',Mobile:'+82 10 0000 0000',Fax:'+82 52 217 0000',Web:'hcdt.unist.ac.kr'},fromMoved:'From moved down to clear a long To block',
 hBody:'Letter',lSal:'Salutation',lBody:'Body (blank line = paragraph space)',bodyNote:'Your line breaks are kept; long lines wrap at 135.5 mm. 27 lines per page; blank lines at the top of a new page are dropped.',
 exShort:'Short sample',exLong:'Long sample',clear:'Clear body',
-hSign:'Signature',lClose:'Closing',lSigner:'Signer',lSigImg:'Signature image (PNG/JPG, fitted to 24×24 mm)',sigClear:'Remove image',
+hSign:'Signature',lClose:'Closing',lSigner:'Signer',lSigImg:'Signature image (PNG/JPG) — placed below the signer name, fitted within 42.5×15.5 mm (1 column × 1 row)',sigClear:'Remove image',
 hExp:'Export',optGridPdf:'Include grid and signature guide in PDF',exPdf:'Save PDF',
 optGrid:'Show grid',optPn:'Page numbers',pages:n=>`${n} page${n>1?'s':''}`,lines:(n,m)=>`${n} body lines · last page ${m}/27`,
 hSpec:'Grid and type spec',thItem:'Item',thVal:'Value',sPage:'Format',sMargin:'Margins',sCol:'Columns (width · gutter)',sRow:'Rows (height · gutter)',sBodyT:'Body',sHeadT:'Headings (To / From / salutation)',sColor:'Logo · pattern colour',sZone:'Zones',
@@ -838,7 +839,13 @@ function gridSvg(){
   for(let i=0;i<NC;i++){const x0=colX(i),x1=x0+CW;s+=`<line x1="${f3(x0)}" y1="${M}" x2="${f3(x0)}" y2="${PH-M}"/><line x1="${f3(x1)}" y1="${M}" x2="${f3(x1)}" y2="${PH-M}"/>`}
   return s+'</g>';
 }
+function sigBoxGuide(y){
+  const c='#FF2020';
+  return `<g data-grid="1"><rect x="${BX}" y="${f3(y)}" width="${f3(SIG_W)}" height="${f3(SIG_H)}" fill="none" stroke="${c}" stroke-width="0.15" stroke-dasharray="0.8 0.6"/>`+
+    `<text x="${f3(BX+SIG_W+2)}" y="${f3(y+SIG_H/2+1)}" font-family="${FAM}" font-weight="bold" font-size="${f3(6*PT)}" fill="${c}">Signature</text></g>`;
+}
 function sigGuide(y){
+  const SIG=GAP_BOX;
   const c='#FF2020';
   return `<g data-grid="1"><rect x="${BX}" y="${f3(y)}" width="${SIG}" height="${SIG}" fill="none" stroke="${c}" stroke-width="0.18"/>`+
     `<line x1="${BX+SIG+3}" y1="${f3(y+1)}" x2="${BX+SIG+3}" y2="${f3(y+SIG-1)}" stroke="${c}" stroke-width="0.12" stroke-dasharray="0.6 0.6"/>`+
@@ -859,10 +866,12 @@ function pageModel(L,i,o){
   }
   lines.forEach((l,k)=>txt(items,l,BX,BASE1+k*LEAD,BODY_PT,0));
   if(isLast){
-    const B=BASE1+(lines.length-1)*LEAD, sy=B+SIG_DY;
-    if(sigURL){   // 24×24mm 칸 안에 비율 유지로 맞춤 (가운데)
-      const r=sigAR||1,w=r>=1?SIG:SIG*r,h=r>=1?SIG/r:SIG;
-      g+=`<image x="${f3(BX+(SIG-w)/2)}" y="${f3(sy+(SIG-h)/2)}" width="${f3(w)}" height="${f3(h)}" preserveAspectRatio="none" href="${sigURL}" xlink:href="${sigURL}"/>`;
+    const B=BASE1+(lines.length-1)*LEAD, sy=B+GAP_DY;            // 24mm 간격 가이드 (본문 끝 바로 아래)
+    const sigY=B+CLOSE_GAP+LEAD+SIG_DY2;                           // 서명자 이름 아래
+    if(o.grid)guide+=sigBoxGuide(sigY);
+    if(sigURL){   // 42.5×15.5mm 안에 비율 유지, 왼쪽·위 정렬
+      const r=sigAR||1,w=Math.min(SIG_W,SIG_H*r),h=w/r;
+      g+=`<image x="${f3(BX)}" y="${f3(sigY)}" width="${f3(w)}" height="${f3(h)}" preserveAspectRatio="none" href="${sigURL}" xlink:href="${sigURL}"/>`;
     }
     if(o.grid)guide+=sigGuide(sy);
     txt(items,D.closing.trim(),BX,B+CLOSE_GAP,BODY_PT,1);
