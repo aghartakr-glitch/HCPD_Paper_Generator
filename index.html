@@ -94,6 +94,16 @@ td:last-child{font-family:var(--font-mono);font-size:var(--fs-small);font-varian
     <div class="ttl"><h1 data-i="h1"></h1><p data-i="sub"></p></div>
     <div class="tools"><span class="spec">A4 · 210 × 297 mm</span>
       <div class="lang" role="group" aria-label="Language / 언어"><button type="button" id="lko" lang="ko">한</button><button type="button" id="len" lang="en">EN</button></div>
+      <div class="hx-act">
+        <button type="button" id="hxGrid" data-hx-grid="#optGrid" aria-pressed="true">Grid</button>
+        <span class="hx-sep"></span>
+        <div class="hx-menu"><button type="button" class="primary" data-hx-menu aria-haspopup="true" aria-expanded="false">Export ▾</button>
+          <div class="hx-menu-pop" hidden>
+            <label class="chk"><input type="checkbox" id="optGridPdf"><span data-i="optGridPdf"></span></label>
+            <button type="button" class="hx-mi" id="exPdf" data-i="exPdf"></button>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -144,8 +154,6 @@ td:last-child{font-family:var(--font-mono);font-size:var(--fs-small);font-varian
 
       <section class="blk">
         <h2 data-i="hExp"></h2>
-        <label class="chk"><input type="checkbox" id="optGridPdf"><span data-i="optGridPdf"></span></label>
-        <div class="btns"><button type="button" class="primary" id="exPdf" data-i="exPdf"></button></div>
         <div class="warn" id="warn" hidden></div>
       </section>
     </div>
@@ -665,7 +673,7 @@ hTo:'받는 사람 (To)',hFrom:'보내는 사람 (From)',lName:'이름',lTitle:'
 hBody:'본문',lSal:'인사말',lBody:'본문 (빈 줄 = 문단 간격)',bodyNote:'입력한 줄바꿈은 그대로, 긴 줄은 135.5mm 폭에서 자동 줄바꿈. 쪽당 27줄, 새 쪽 첫머리 빈 줄은 생략.',
 exShort:'짧은 예시',exLong:'긴 예시',clear:'본문 비우기',
 hSign:'서명',lClose:'맺음말',lSigner:'서명자',lSigImg:'서명 이미지 (PNG·JPG) — 서명자 이름 아래, 최대 42.5×15.5mm(1단×1행)에 비율 유지로 맞춤',sigClear:'서명 이미지 삭제',
-hExp:'내보내기',optGridPdf:'PDF에 그리드·서명 가이드 포함',exPdf:'PDF 저장',
+hExp:'내보내기',optGridPdf:'PDF에 그리드·서명 가이드 포함',exPdf:'PDF',
 optGrid:'그리드 보기',optPn:'쪽번호',pages:n=>`${n}쪽`,lines:(n,m)=>`본문 ${n}줄 · 마지막 쪽 ${m}/27줄`,
 hSpec:'그리드 · 서체 규격',thItem:'항목',thVal:'값',sPage:'판형',sMargin:'여백',sMarginV:'14 mm (상하좌우)',sBodyV:'Helvetica Neue LT Std 55 Roman 8 / 12 pt · 쪽당 27줄',sCol:'세로 단 (폭 · 간격)',sRow:'가로 행 (높이 · 간격)',sBodyT:'본문',sHeadT:'제목 (To / From / 인사말)',sColor:'로고 · 패턴 색',sZone:'영역 배치',
 sZoneV:'로고 Row 1 · To/인사말 Row 4 · From Row 7 · 본문 Col 2–4 Row 4–9 · 패턴 Row 13–14 (재단 밖까지)',
@@ -676,7 +684,7 @@ hTo:'To',hFrom:'From',lName:'Name',lTitle:'Title',lAddr:'Affiliation · address 
 hBody:'Letter',lSal:'Salutation',lBody:'Body (blank line = paragraph space)',bodyNote:'Your line breaks are kept; long lines wrap at 135.5 mm. 27 lines per page; blank lines at the top of a new page are dropped.',
 exShort:'Short sample',exLong:'Long sample',clear:'Clear body',
 hSign:'Signature',lClose:'Closing',lSigner:'Signer',lSigImg:'Signature image (PNG/JPG) — placed below the signer name, fitted within 42.5×15.5 mm (1 column × 1 row)',sigClear:'Remove image',
-hExp:'Export',optGridPdf:'Include grid and signature guide in PDF',exPdf:'Save PDF',
+hExp:'Export',optGridPdf:'Include grid and signature guide in PDF',exPdf:'PDF',
 optGrid:'Show grid',optPn:'Page numbers',pages:n=>`${n} page${n>1?'s':''}`,lines:(n,m)=>`${n} body lines · last page ${m}/27`,
 hSpec:'Grid and type spec',thItem:'Item',thVal:'Value',sPage:'Format',sMargin:'Margins',sMarginV:'14 mm (all sides)',sBodyV:'Helvetica Neue LT Std 55 Roman 8 / 12 pt · 27 lines/page',sCol:'Columns (width · gutter)',sRow:'Rows (height · gutter)',sBodyT:'Body',sHeadT:'Headings (To / From / salutation)',sColor:'Logo · pattern colour',sZone:'Zones',
 sZoneV:'Logo Row 1 · To/salutation Row 4 · From Row 7 · body Col 2–4 Row 4–9 · pattern Row 13–14 (bleeds off)',
