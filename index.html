@@ -93,18 +93,36 @@ html.hx-wide body{height:100vh;overflow:hidden;padding-block:6px}
 html.hx-wide .wrap{max-width:none;height:100%;grid-template-rows:auto minmax(0,1fr);gap:8px}
 html.hx-wide .hx-steps{display:none!important}
 html.hx-wide header{padding-bottom:8px}
-html.hx-wide main{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:16px;height:100%;min-height:0}
-html.hx-wide .form{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto auto;align-content:start;overflow:auto;height:100%;gap:10px}
-html.hx-wide .form{align-items:start}
-html.hx-wide .form>.blk{align-content:start}
-html.hx-wide .form>.blk:nth-child(1){grid-column:1;grid-row:1/3}
-html.hx-wide .form>.blk:nth-child(2){grid-column:2;grid-row:1/3}
-html.hx-wide .form>.blk:nth-child(3){grid-column:3;grid-row:1}
-html.hx-wide .form>.blk:nth-child(4){grid-column:3;grid-row:2}
+html.hx-wide main{grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:16px;height:100%;min-height:0}
+html.hx-wide .form{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);grid-template-rows:max-content max-content max-content;align-items:stretch;height:100%;min-height:0;gap:10px;overflow:auto}
+html.hx-wide .form>.blk{align-content:start;min-height:0;overflow:auto}
+html.hx-wide .form>.blk:nth-child(1){grid-column:1;grid-row:1}
+html.hx-wide .form>.blk:nth-child(2){grid-column:1;grid-row:2}
+html.hx-wide .form>.blk:nth-child(3){grid-column:2;grid-row:1/3;display:flex;flex-direction:column}
+html.hx-wide .form>.blk:nth-child(4){grid-column:1/3;grid-row:3;align-self:stretch}
+html.hx-wide .form>.blk:nth-child(3) label:has(#body){flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+html.hx-wide #body{flex:1 1 auto;min-height:200px;height:auto;resize:none;font-size:15px;line-height:1.7}
+html.hx-wide .form>.blk{padding:8px 12px;gap:5px}
+html.hx-wide .form input[type=text],html.hx-wide .form select{padding:3px 8px;font-size:13px}
+html.hx-wide .form>.blk:nth-child(4) .lbl{display:none}
+html.hx-wide .form>.blk>h2{margin:0}
+html.hx-wide .form .ctadd button,html.hx-wide .form .ct>.btns button{padding:2px 9px;font-size:12px}
+html.hx-wide #toAddr,html.hx-wide #frAddr{height:64px;min-height:64px;padding:4px 8px;font-size:13px;line-height:1.3;resize:none}
+html.hx-wide .form .ct{gap:4px}
+html.hx-wide #toCts,html.hx-wide #frCts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 10px}
+html.hx-wide .crow{grid-template-columns:70px minmax(0,1fr) 22px;gap:4px}
+html.hx-wide .form .row2{gap:6px}
+html.hx-wide .form label{gap:2px}
+html.hx-wide .form>.blk:nth-child(4){display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:6px 20px;align-items:center}
+html.hx-wide .form>.blk:nth-child(4)>h2{grid-column:1/3}
+html.hx-wide .form>.blk:nth-child(4) .sig{gap:10px}
+html.hx-wide .form>.blk:nth-child(4) .thumb{width:60px;height:34px}
+html.hx-wide .form .btns{gap:6px}
+html.hx-wide .form .btns button{padding:4px 10px}
+html.hx-wide .form>.blk:nth-child(1),html.hx-wide .form>.blk:nth-child(2),html.hx-wide .form>.blk:nth-child(4){overflow:visible;min-height:max-content}
 html.hx-wide main>div:last-child{grid-template-rows:auto minmax(0,1fr);height:100%;min-height:0}
 html.hx-wide .stage{overflow:auto;min-height:0}
 html.hx-wide details.spec{display:none}
-html.hx-wide #body{min-height:130px;height:130px}
 </style>
 </head>
 <body>
