@@ -61,8 +61,8 @@ button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(
 .cts:empty{display:none}
 .crow{display:grid;grid-template-columns:92px minmax(0,1fr) 36px;gap:6px}
 .crow select{padding:8px 6px;font-size:var(--fs-small)}
-.crow button{padding:0;font-size:var(--fs-body);line-height:1;color:var(--muted)!important;border:0!important;background:transparent!important;border-radius:6px!important}
-.crow button:hover{background:var(--chip)!important}
+body.hx-tool .crow button{padding:0;width:auto;height:auto;font-size:var(--fs-body);line-height:1;color:var(--muted)!important;border:0!important;background:transparent!important;border-radius:6px!important}
+body.hx-tool .crow button:hover{background:var(--chip)!important}
 .ctadd{display:flex;flex-wrap:wrap;gap:6px}
 .ctadd button{padding:4px 10px;font-size:var(--fs-small);font-family:var(--font-mono)}
 .sig{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -1023,5 +1023,6 @@ init();
 </script>
 
 <script src="hcdt-ui.js?v=20261029f" data-tool="letter"></script>
+<script>window.HX_CMYK=['#stage']</script><script src="hcdt-cmyk.js?v=20261029f"></script>
 </body>
 </html>
