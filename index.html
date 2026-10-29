@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <style>html,body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
 
-<title>HCDT 문서 서식 생성기</title>
+<title>HCDT Letter</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* 레이아웃: 좌측 입력 패널 + 우측 A4 미리보기(실제 비율 210×297mm, 페이지 자동 분할). 명함 생성기와 같은 토큰 체계 */
@@ -85,7 +85,7 @@ td:last-child{font-family:var(--font-mono);font-size:var(--fs-small);font-varian
 @media (max-width:900px){main{grid-template-columns:minmax(0,1fr)}.pvbar{position:static}}
 @media (max-width:420px){.row2{grid-template-columns:minmax(0,1fr)}.stage{padding:10px}}
 </style>
-<link rel="stylesheet" href="hcdt-ui.css?v=20261029c">
+<link rel="stylesheet" href="hcdt-ui.css?v=20261029d">
 </head>
 <body>
 
@@ -148,16 +148,14 @@ td:last-child{font-family:var(--font-mono);font-size:var(--fs-small);font-varian
         <div class="sig">
           <div class="thumb" id="sigThumb" aria-hidden="true"></div>
           <div style="display:grid;gap:6px;min-width:0">
-            <label><span data-i="lSigImg"></span><input type="file" id="sigFile" accept="image/png,image/jpeg"></label>
-            <div class="btns"><button type="button" id="sigClear" data-i="sigClear"></button></div>
+            <span class="lbl" data-i="lSigImg" style="color:var(--muted)"></span>
+            <input type="file" id="sigFile" accept="image/png,image/jpeg" hidden>
+            <div class="btns"><button type="button" id="sigPick" data-i="sigPick"></button><button type="button" id="sigClear" data-i="sigClear"></button></div>
           </div>
         </div>
       </section>
 
-      <section class="blk">
-        <h2 data-i="hExp"></h2>
-        <div class="warn" id="warn" hidden></div>
-      </section>
+      <div class="warn" id="warn" hidden></div>
     </div>
 
     <div style="display:grid;gap:10px;min-width:0">
@@ -672,9 +670,9 @@ try{
 const L={
 ko:{h1:'HCDT 문서 서식 생성기',sub:'학과 서식(A4) 그리드에 맞춰 편지를 조판하고 PDF로 저장합니다. 본문이 길면 페이지가 자동으로 늘어납니다.',
 hTo:'받는 사람 (To)',hFrom:'보내는 사람 (From)',lName:'이름',lTitle:'직함',lAddr:'소속 · 주소 (줄바꿈 그대로 조판)',lCt:'연락처 (빈 칸은 인쇄 안 됨 · × 로 삭제)',ctDel:'이 연락처 삭제',ctPh:{Email:'name@unist.ac.kr',Tel:'+82 52 217 0000',Mobile:'+82 10 0000 0000',Fax:'+82 52 217 0000',Web:'hcdt.unist.ac.kr'},fromMoved:'To 정보가 길어 From을 한 행씩 아래로 내림',
-hBody:'본문',lSal:'인사말',lBody:'본문 (빈 줄 = 문단 간격)',bodyNote:'입력한 줄바꿈은 그대로, 긴 줄은 135.5mm 폭에서 자동 줄바꿈. 쪽당 27줄, 새 쪽 첫머리 빈 줄은 생략.',
+hBody:'본문',lSal:'인사말',lBody:'본문 (빈 줄 = 문단 간격)',bodyNote:'줄바꿈 유지 · 135.5mm에서 줄바꿈 · 쪽당 27줄',
 exShort:'짧은 예시',exLong:'긴 예시',clear:'본문 비우기',
-hSign:'서명',lClose:'맺음말',lSigner:'서명자',lSigImg:'서명 이미지 (PNG·JPG) — 서명자 이름 아래, 최대 42.5×15.5mm(1단×1행)에 비율 유지로 맞춤',sigClear:'서명 이미지 삭제',
+hSign:'서명',lClose:'맺음말',lSigner:'서명자',lSigImg:'서명 이미지 (PNG·JPG) · 42.5×15.5mm',sigPick:'이미지 선택',sigClear:'삭제',
 hExp:'내보내기',optGridPdf:'PDF에 그리드·서명 가이드 포함',exPdf:'PDF',
 optGrid:'그리드 보기',optPn:'쪽번호',pages:n=>`${n}쪽`,lines:(n,m)=>`본문 ${n}줄 · 마지막 쪽 ${m}/27줄`,
 hSpec:'그리드 · 서체 규격',thItem:'항목',thVal:'값',sPage:'판형',sMargin:'여백',sMarginV:'14 mm (상하좌우)',sBodyV:'Helvetica Neue LT Std 55 Roman 8 / 12 pt · 쪽당 27줄',sCol:'세로 단 (폭 · 간격)',sRow:'가로 행 (높이 · 간격)',sBodyT:'본문',sHeadT:'제목 (To / From / 인사말)',sColor:'로고 · 패턴 색',sZone:'영역 배치',
@@ -683,9 +681,9 @@ wGlyph:c=>`서체에 없는 글자는 빈칸으로 나옵니다: ${c} (영문 �
 tSaved:n=>`저장: ${n}`,tFail:c=>`저장 실패 (${c})`,tPdf:m=>`PDF 생성 실패: ${m}`,tImg:'PNG 또는 JPG 파일만 쓸 수 있습니다.',page:n=>`${n}쪽`},
 en:{h1:'HCDT Letter',sub:'Typesets a letter on the department A4 grid and saves it as PDF. Long letters flow onto extra pages automatically.',
 hTo:'To',hFrom:'From',lName:'Name',lTitle:'Title',lAddr:'Affiliation · address (line breaks kept)',lCt:'Contact (empty rows are not printed · × removes)',ctDel:'Remove this contact',ctPh:{Email:'name@unist.ac.kr',Tel:'+82 52 217 0000',Mobile:'+82 10 0000 0000',Fax:'+82 52 217 0000',Web:'hcdt.unist.ac.kr'},fromMoved:'From moved down to clear a long To block',
-hBody:'Letter',lSal:'Salutation',lBody:'Body (blank line = paragraph space)',bodyNote:'Your line breaks are kept; long lines wrap at 135.5 mm. 27 lines per page; blank lines at the top of a new page are dropped.',
+hBody:'Letter',lSal:'Salutation',lBody:'Body (blank line = paragraph space)',bodyNote:'Line breaks kept · wraps at 135.5 mm · 27 lines per page',
 exShort:'Short sample',exLong:'Long sample',clear:'Clear body',
-hSign:'Signature',lClose:'Closing',lSigner:'Signer',lSigImg:'Signature image (PNG/JPG) — placed below the signer name, fitted within 42.5×15.5 mm (1 column × 1 row)',sigClear:'Remove image',
+hSign:'Signature',lClose:'Closing',lSigner:'Signer',lSigImg:'Signature image (PNG/JPG) · 42.5 × 15.5 mm',sigPick:'Choose image',sigClear:'Remove',
 hExp:'Export',optGridPdf:'Include grid and signature guide in PDF',exPdf:'PDF',
 optGrid:'Show grid',optPn:'Page numbers',pages:n=>`${n} page${n>1?'s':''}`,lines:(n,m)=>`${n} body lines · last page ${m}/27`,
 hSpec:'Grid and type spec',thItem:'Item',thVal:'Value',sPage:'Format',sMargin:'Margins',sMarginV:'14 mm (all sides)',sBodyV:'Helvetica Neue LT Std 55 Roman 8 / 12 pt · 27 lines/page',sCol:'Columns (width · gutter)',sRow:'Rows (height · gutter)',sBodyT:'Body',sHeadT:'Headings (To / From / salutation)',sColor:'Logo · pattern colour',sZone:'Zones',
@@ -951,6 +949,7 @@ function setSig(url){
   if(!url){sigAR=1;render();return}
   const im=new Image();im.onload=()=>{sigAR=im.naturalWidth/im.naturalHeight||1;render()};im.src=url;
 }
+$('sigPick').addEventListener('click',()=>$('sigFile').click());
 $('sigFile').addEventListener('change',e=>{
   const f=e.target.files&&e.target.files[0];if(!f)return;
   if(!/^image\/(png|jpeg)$/.test(f.type)){toast(t('tImg'));e.target.value='';return}
@@ -1022,6 +1021,6 @@ function init(){
 init();
 </script>
 
-<script src="hcdt-ui.js?v=20261029c" data-tool="letter"></script>
+<script src="hcdt-ui.js?v=20261029d" data-tool="letter"></script>
 </body>
 </html>
