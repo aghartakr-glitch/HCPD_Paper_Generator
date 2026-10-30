@@ -746,12 +746,6 @@ const SHORT=`It is my pleasure to invite you to the HCDT Design Party, a gatheri
 
 This event will bring our community together to celebrate the ideas, projects, and people that make our department unique. It will be an opportunity to step away from our daily work, reconnect with colleagues, and meet students and researchers from different labs in a relaxed setting.
 
-Throughout the evening, participants will be invited to share ongoing projects, exchange perspectives, and discuss the questions shaping their work. From early experiments to completed designs, we hope these conversations will offer a glimpse into the wide range of interests and approaches within HCDT.
-
-Alongside these exchanges, there will be time to enjoy refreshments and informal conversation. Whether discussing a new research direction or simply catching up, we hope everyone will find something to enjoy and someone new to connect with.
-
-Your presence would be greatly appreciated. We would be delighted to hear your thoughts, learn about your lab’s recent work, and celebrate this occasion together. Please also feel free to extend the invitation to members of your lab.
-
 Further details regarding the date, time, venue, and program will follow. We look forward to welcoming you to an enjoyable evening with the HCDT community.`;
 const LONG=`It is my great pleasure to invite you to the HCDT Design Party, a gathering for faculty, students, researchers, and colleagues from the Department of Human-Centered Design and Technology at UNIST. We hope to bring our community together for an evening of conversation, discovery, and celebration, with time to appreciate the people and ideas that shape our department.
 
@@ -963,7 +957,7 @@ function render(){
   el.hidden=!w.length;el.innerHTML=w.map(x=>`<span>${esc(x)}</span>`).join('');
   save();
 }
-let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem('hcdt-letter-v2',JSON.stringify({D:data(),CT,grid:$('optGrid').checked,pn:$('optPn').checked,gpdf:$('optGridPdf').checked,sig:sigURL&&sigURL.length<1.5e6?sigURL:null}))}catch(e){}},300)}
+let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem('hcdt-letter-v3',JSON.stringify({D:data(),CT,grid:$('optGrid').checked,pn:$('optPn').checked,gpdf:$('optGridPdf').checked,sig:sigURL&&sigURL.length<1.5e6?sigURL:null}))}catch(e){}},300)}
 
 /* ── 연락처 행 ── */
 function buildCt(){
@@ -1040,7 +1034,7 @@ async function exPdf(){
 /* ── 초기화 ── */
 function setData(o){IDS.forEach(i=>$(i).value=o[i]??'')}
 function init(){
-  let s=null;try{s=JSON.parse(localStorage.getItem('hcdt-letter-v2')||'null')}catch(e){}
+  let s=null;try{s=JSON.parse(localStorage.getItem('hcdt-letter-v3')||'null')}catch(e){}
   setData(s&&s.D?Object.assign({},SAMPLE,s.D):SAMPLE);
   if(s&&s.CT&&Array.isArray(s.CT.to)&&Array.isArray(s.CT.fr))CT={to:s.CT.to.filter(x=>KINDS.includes(x.k)).map(x=>({k:x.k,v:String(x.v||'')})),fr:s.CT.fr.filter(x=>KINDS.includes(x.k)).map(x=>({k:x.k,v:String(x.v||'')}))};
   if(s){$('optGrid').checked=s.grid!==false;$('optPn').checked=s.pn!==false;$('optGridPdf').checked=!!s.gpdf;if(s.sig)setSig(s.sig)}
