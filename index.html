@@ -141,6 +141,7 @@ html.hx-wide details.spec{display:none}
           <div class="hx-menu-pop" hidden>
             <label class="chk"><input type="checkbox" id="optGridPdf"><span data-i="optGridPdf"></span></label>
             <button type="button" class="hx-mi" id="exPdf" data-i="exPdf"></button>
+            <button type="button" class="hx-mi" id="exDocx" data-i="exDocx"></button>
           </div>
         </div>
       </div>
@@ -711,7 +712,7 @@ hTo:'받는 사람 (To)',hFrom:'보내는 사람 (From)',lName:'이름',lTitle:'
 hBody:'본문',lSal:'인사말',lBody:'본문 (빈 줄 = 문단 간격)',bodyNote:'줄바꿈 유지 · 135.5mm에서 줄바꿈 · 쪽당 27줄',
 exShort:'짧은 예시',exLong:'긴 예시',clear:'본문 비우기',
 hSign:'서명',lClose:'맺음말',lSigner:'서명자',lSigImg:'서명 이미지 (PNG·JPG) · 42.5×15.5mm',sigPick:'이미지 선택',sigClear:'삭제',
-hExp:'내보내기',optGridPdf:'PDF에 그리드·서명 가이드 포함',exPdf:'PDF',
+hExp:'내보내기',optGridPdf:'PDF에 그리드·서명 가이드 포함',exPdf:'PDF',exDocx:'Word (.docx)',
 optGrid:'그리드 보기',optPn:'쪽번호',pages:n=>`${n}쪽`,lines:(n,m)=>`본문 ${n}줄 · 마지막 쪽 ${m}/27줄`,
 hSpec:'그리드 · 서체 규격',thItem:'항목',thVal:'값',sPage:'판형',sMargin:'여백',sMarginV:'14 mm (상하좌우)',sBodyV:'Helvetica Neue LT Std 55 Roman 8 / 12 pt · 쪽당 27줄',sCol:'세로 단 (폭 · 간격)',sRow:'가로 행 (높이 · 간격)',sBodyT:'본문',sHeadT:'제목 (To / From / 인사말)',sColor:'로고 · 패턴 색',sZone:'영역 배치',
 sZoneV:'로고 Row 1 · To/인사말 Row 4 · From Row 7 · 본문 Col 2–4 Row 4–9 · 패턴 Row 13–14 (재단 밖까지)',
@@ -722,7 +723,7 @@ hTo:'To',hFrom:'From',lName:'Name',lTitle:'Title',lAddr:'Affiliation · address 
 hBody:'Letter',lSal:'Salutation',lBody:'Body (blank line = paragraph space)',bodyNote:'Line breaks kept · wraps at 135.5 mm · 27 lines per page',
 exShort:'Short sample',exLong:'Long sample',clear:'Clear body',
 hSign:'Signature',lClose:'Closing',lSigner:'Signer',lSigImg:'Signature image (PNG/JPG) · 42.5 × 15.5 mm',sigPick:'Choose image',sigClear:'Remove',
-hExp:'Export',optGridPdf:'Include grid and signature guide in PDF',exPdf:'PDF',
+hExp:'Export',optGridPdf:'Include grid and signature guide in PDF',exPdf:'PDF',exDocx:'Word (.docx)',
 optGrid:'Show grid',optPn:'Page numbers',pages:n=>`${n} page${n>1?'s':''}`,lines:(n,m)=>`${n} body lines · last page ${m}/27`,
 hSpec:'Grid and type spec',thItem:'Item',thVal:'Value',sPage:'Format',sMargin:'Margins',sMarginV:'14 mm (all sides)',sBodyV:'Helvetica Neue LT Std 55 Roman 8 / 12 pt · 27 lines/page',sCol:'Columns (width · gutter)',sRow:'Rows (height · gutter)',sBodyT:'Body',sHeadT:'Headings (To / From / salutation)',sColor:'Logo · pattern color',sZone:'Zones',
 sZoneV:'Logo Row 1 · To/salutation Row 4 · From Row 7 · body Col 2–4 Row 4–9 · pattern Row 13–14 (bleeds off)',
@@ -989,6 +990,78 @@ $('sigFile').addEventListener('change',e=>{
 });
 $('sigClear').addEventListener('click',()=>{$('sigFile').value='';setSig(null)});
 
+/* ── Word(.docx) 내보내기 ──
+   쪽마다 배경(로고·패턴·서명 이미지)은 그림 한 장, 본문 줄은 위치를 고정한 텍스트 프레임이라 Word에서 바로 고칠 수 있다.
+   파일은 ZIP(무압축)으로 직접 묶는다. 외부 라이브러리 없음. */
+const CRC_T=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=CRC_T[(c^u8[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
+function zipStore(files){
+  const enc=new TextEncoder(),parts=[],central=[];let off=0;
+  for(const f of files){
+    const nb=enc.encode(f.name),crc=crc32(f.data),n=f.data.length;
+    const lh=new DataView(new ArrayBuffer(30));
+    lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x0800,true);lh.setUint16(8,0,true);lh.setUint16(10,0,true);lh.setUint16(12,0x21,true);
+    lh.setUint32(14,crc,true);lh.setUint32(18,n,true);lh.setUint32(22,n,true);lh.setUint16(26,nb.length,true);lh.setUint16(28,0,true);
+    parts.push(new Uint8Array(lh.buffer),nb,f.data);
+    const ch=new DataView(new ArrayBuffer(46));
+    ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0x0800,true);ch.setUint16(10,0,true);ch.setUint16(12,0,true);ch.setUint16(14,0x21,true);
+    ch.setUint32(16,crc,true);ch.setUint32(20,n,true);ch.setUint32(24,n,true);ch.setUint16(28,nb.length,true);ch.setUint32(42,off,true);
+    central.push(new Uint8Array(ch.buffer),nb);
+    off+=30+nb.length+n;
+  }
+  const cs=central.reduce((a,b)=>a+b.length,0);
+  const end=new DataView(new ArrayBuffer(22));
+  end.setUint32(0,0x06054b50,true);end.setUint16(8,files.length,true);end.setUint16(10,files.length,true);end.setUint32(12,cs,true);end.setUint32(16,off,true);
+  return new Blob([...parts,...central,new Uint8Array(end.buffer)],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+}
+const DX_TW=56.6929, DX_EMU=36000;   // 1 mm → twips / EMU
+const dxEsc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function pageBgPng(svg){
+  const W=Math.round(PW/25.4*150),H=Math.round(PH/25.4*150);
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+  g.fillStyle='#fff';g.fillRect(0,0,W,H);
+  const img=new Image();img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);await img.decode();
+  g.drawImage(img,0,0,W,H);
+  const b=await new Promise(r=>cv.toBlob(r,'image/png'));return new Uint8Array(await b.arrayBuffer());
+}
+function dxBgPara(n,rid){
+  const cx=Math.round(PW*DX_EMU),cy=Math.round(PH*DX_EMU);
+  return `<w:p><w:r><w:drawing><wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="${n}" behindDoc="1" locked="0" layoutInCell="1" allowOverlap="1"><wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="page"><wp:posOffset>0</wp:posOffset></wp:positionH><wp:positionV relativeFrom="page"><wp:posOffset>0</wp:posOffset></wp:positionV><wp:extent cx="${cx}" cy="${cy}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapNone/><wp:docPr id="${n}" name="Page ${n} background"/><wp:cNvGraphicFramePr/><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="${n}" name="page${n}.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="${rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:anchor></w:drawing></w:r></w:p>`;
+}
+function dxTextPara(it){
+  const x=Math.round(it.x*DX_TW),y=Math.round((it.y-it.size*0.3528*0.8)*DX_TW);
+  const w=Math.max(200,Math.round(it.t.length*it.size*0.6*0.3528*DX_TW));
+  return `<w:p><w:pPr><w:framePr w:w="${w}" w:wrap="none" w:hAnchor="page" w:vAnchor="page" w:x="${x}" w:y="${y}"/><w:spacing w:before="0" w:after="0" w:line="${Math.round(it.size*1.2*20)}" w:lineRule="exact"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Helvetica Neue" w:hAnsi="Helvetica Neue" w:eastAsia="Spoqa Han Sans Neo"/>${it.b?'<w:b/>':''}<w:sz w:val="${Math.round(it.size*2)}"/></w:rPr><w:t xml:space="preserve">${dxEsc(it.t)}</w:t></w:r></w:p>`;
+}
+async function buildDocx(){
+  const D=data(),Lo=layout(D),pn=$('optPn').checked;
+  const media=[],rels=[];let body='';
+  for(let i=0;i<Lo.pages.length;i++){
+    const m=pageModel(Lo,i,{D,grid:false,pn});
+    media.push({name:`word/media/page${i+1}.png`,data:await pageBgPng(svgOpen(PW+'mm',PH+'mm')+m.g+'</svg>')});
+    const rid='rIdP'+(i+1);
+    rels.push(`<Relationship Id="${rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/page${i+1}.png"/>`);
+    body+=dxBgPara(i+1,rid);
+    for(const it of m.items) if(it.t&&it.t.trim()) body+=dxTextPara(it);
+    if(i<Lo.pages.length-1) body+='<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+  }
+  const enc=s=>new TextEncoder().encode(s);
+  const files=[
+    {name:'[Content_Types].xml',data:enc('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>')},
+    {name:'_rels/.rels',data:enc('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>')},
+    {name:'word/_rels/document.xml.rels',data:enc('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+rels.join('')+'</Relationships>')},
+    {name:'word/document.xml',data:enc('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><w:body>'+body+'<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="0" w:right="0" w:bottom="0" w:left="0" w:header="0" w:footer="0" w:gutter="0"/></w:sectPr></w:body></w:document>')},
+    ...media
+  ];
+  return zipStore(files);
+}
+async function exDocx(){
+  const btn=$('exDocx');btn.disabled=true;
+  try{const blob=await buildDocx();await saveFile(fname().replace(/\.pdf$/,'.docx'),blob)}
+  catch(e){console.error(e);toast(t('tPdf',e.message||e))}
+  finally{btn.disabled=false}
+}
+
 /* ── 저장 ── */
 let tt;function toast(m){const el=$('toast');el.textContent=m;el.hidden=false;clearTimeout(tt);tt=setTimeout(()=>el.hidden=true,3200)}
 async function saveFile(name,blob){
@@ -1045,6 +1118,7 @@ function init(){
   $('exLong').addEventListener('click',()=>{$('body').value=LONG;render()});
   $('clear').addEventListener('click',()=>{$('body').value='';render()});
   $('exPdf').addEventListener('click',exPdf);
+  $('exDocx').addEventListener('click',exDocx);
   $('lko').addEventListener('click',()=>{lang='ko';try{localStorage.setItem('hcdt-letter-lang',lang)}catch(e){}applyLang();buildCt();render()});
   $('len').addEventListener('click',()=>{lang='en';try{localStorage.setItem('hcdt-letter-lang',lang)}catch(e){}applyLang();buildCt();render()});
   render();
