@@ -65,7 +65,7 @@
   function frameLink() {
     var last = -1;
     /* poster and slides stay fixed-height editors (stacked they would be thousands of px tall); Logo Motion only on desktop widths (stacked on phones, so the page grows) */
-    function isApp() { var w = window.innerWidth; return TOOL === 'poster' || TOOL === 'slides' || (TOOL === 'motion' && w >= 1000); }
+    function isApp() { var w = window.innerWidth; return TOOL === 'poster' || TOOL === 'slides' || ((TOOL === 'letter' || TOOL === 'motion') && w >= 1000); }
     document.documentElement.classList.add('hx-framed');
     function post() {
       var app = isApp();
