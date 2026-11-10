@@ -87,7 +87,7 @@ td:last-child{font-family:var(--font-mono);font-size:var(--fs-small);font-varian
 @media (max-width:420px){.row2{grid-template-columns:minmax(0,1fr)}.stage{padding:10px}}
 </style>
 <link rel="stylesheet" href="hcdt-ui.css?v=20261108c">
-<link rel="stylesheet" href="hcdt-embed.css?v=20261111b">
+<link rel="stylesheet" href="hcdt-embed.css?v=20261112b">
 <style>
 /* ===== Letter embedded in the guideline: ONE definition (12-column grid: edit 4 + preview 8; below 1024px Edit / Preview tabs) =====
    The page flows at its natural height, so the whole form and the whole A4 page stay reachable. */
@@ -110,10 +110,14 @@ html.hx-framed main>div:last-child{grid-column:5/-1}
 .zoombar button:hover{background:var(--chip,rgba(0,0,0,.06))}
 .zoombar output{padding:3px 6px;min-width:46px;text-align:center;font-variant-numeric:tabular-nums;color:var(--muted)}
 .stage .page{max-width:calc(640px*var(--z,1))}
-html.hx-framed .stage{align-content:start;overflow-x:auto;padding:8px 0}
-html.hx-framed .stage .page{width:calc(100%*var(--z,1));max-width:none;flex:none}
+/* framed preview = the same stage as the Poster editors: grey surface fills the whole column, zoom bar 10px from the top-left corner, page opens at Fit (whole A4 visible) and sits centred */
+html.hx-framed .stagebox{position:relative;min-width:0}
+html.hx-framed .stagebox>.zoombar{position:absolute;top:10px;left:10px;z-index:3;margin:0}
+html.hx-framed .stagebox>.zoombar button,html.hx-framed .stagebox>.zoombar output{font-size:14px}
+html.hx-framed .stage{align-content:start;justify-items:safe center;overflow:auto;border-radius:var(--radius-panel,0);padding:55px 24px 24px;min-height:var(--stage-h,640px)}
+html.hx-framed .stage .page{width:calc(var(--pw,100%)*var(--z,1));max-width:none;flex:none}
 html.hx-framed .page svg{max-height:none}
-.stage[data-zoomed]{justify-items:start}
+html:not(.hx-framed) .stage[data-zoomed]{justify-items:start}
 @media(max-width:1023px){
   html.hx-framed main{grid-template-columns:minmax(0,1fr);row-gap:var(--space-3,16px)}
   html.hx-framed .hx-viewtabs{display:flex;flex-wrap:wrap;gap:10px;padding:4px 8px 4px 4px;margin-left:-4px}
@@ -1151,7 +1155,17 @@ init();
   var bar=document.querySelector('.pvbar'),stage=document.getElementById('stage');if(!bar||!stage)return;
   var z=1,zb=document.createElement('div');zb.className='zoombar';zb.setAttribute('role','group');zb.setAttribute('aria-label','Zoom');
   zb.innerHTML='<button type="button" id="zOut" aria-label="Zoom out">−</button><output id="zVal" aria-live="polite">100%</output><button type="button" id="zIn" aria-label="Zoom in">+</button><button type="button" id="zFit">Fit</button>';
-  bar.insertBefore(zb,bar.querySelector('.cap')||null);
+  var framed=window.parent!==window;  /* same test hcdt-ui.js uses to add html.hx-framed */
+  if(framed){
+    /* the zoom bar sits on the stage (like the Poster editors); Fit = the whole A4 page fits one screen-sized stage */
+    var box=document.createElement('div');box.className='stagebox';stage.parentNode.insertBefore(box,stage);box.appendChild(stage);box.appendChild(zb);
+    /* same height budget as the Poster/Slides editors: frame height (screen - 180, 680-900) minus the 212px above the workspace */
+    var stageH=function(){return Math.max(680,Math.min(900,((window.screen&&screen.availHeight)||900)-180))-212};
+    var fitW=function(){var h=stageH(),w=stage.clientWidth-48;return Math.max(160,Math.min(w,(h-55-24-28)/1.4143))};  /* 28px = the "Page 1" caption above the sheet */
+    var layout=function(){stage.style.setProperty('--stage-h',stageH()+'px');stage.style.setProperty('--pw',Math.round(fitW())+'px')};
+    layout();window.addEventListener('load',layout);window.addEventListener('resize',layout);setTimeout(layout,250);
+    if(window.ResizeObserver)new ResizeObserver(layout).observe(stage);
+  }else bar.insertBefore(zb,bar.querySelector('.cap')||null);
   function set(v){z=Math.max(.1,Math.min(8,v));stage.style.setProperty('--z',z);if(z===1)stage.removeAttribute('data-zoomed');else stage.setAttribute('data-zoomed','');document.getElementById('zVal').textContent=Math.round(z*100)+'%'}
   document.getElementById('zOut').addEventListener('click',function(){set(z/1.2)});
   document.getElementById('zIn').addEventListener('click',function(){set(z*1.2)});
