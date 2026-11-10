@@ -476,3 +476,10 @@ html:not(#hxt):not(#hxt2):not(#hxt3):not(#hxt4) body .seg button[aria-pressed=tr
 
 /* Embedded in the guideline: content sits exactly on the page's grid edges (no extra side padding). */
 html.hx-framed body{padding-left:0!important;padding-right:0!important}
+/* Embedded: no extra top/bottom padding (the guideline page provides the spacing) */
+html.hx-framed body{padding-top:0!important;padding-bottom:0!important}
+/* Letter embedded in the guideline: natural document height (the whole A4 page and form stay reachable) */
+html.hx-framed body.hx-p-letter{display:block!important;height:auto!important;overflow:visible!important}
+html.hx-framed body.hx-p-letter>.wrap{display:grid!important;height:auto!important;min-height:0;grid-template-rows:none!important}
+html.hx-framed body.hx-p-letter>.wrap>main{grid-template-rows:none!important;align-items:start!important;height:auto!important}
+html.hx-framed body.hx-p-letter>.wrap>main>*{overflow:visible!important}
