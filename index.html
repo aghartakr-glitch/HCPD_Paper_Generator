@@ -87,78 +87,35 @@ td:last-child{font-family:var(--font-mono);font-size:var(--fs-small);font-varian
 @media (max-width:420px){.row2{grid-template-columns:minmax(0,1fr)}.stage{padding:10px}}
 </style>
 <link rel="stylesheet" href="hcdt-ui.css?v=20261108c">
+<link rel="stylesheet" href="hcdt-embed.css?v=20261111a">
 <style>
-/* wide workspace: everything on one screen */
-html.hx-framed body{height:100vh;overflow:hidden;padding-block:6px}
-html.hx-framed .wrap{max-width:none;height:100%;grid-template-rows:auto minmax(0,1fr);gap:8px}
-html.hx-framed header{padding-bottom:8px}
-html.hx-framed main{grid-template-columns:minmax(420px,.82fr) minmax(0,1.18fr);gap:16px;height:100%;min-height:0}
-html.hx-framed .form{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);grid-template-rows:max-content max-content max-content;align-items:stretch;height:100%;min-height:0;gap:10px;overflow:auto}
-html.hx-framed .form>.blk{align-content:start;min-height:0;overflow:auto}
-html.hx-framed .form>.blk:nth-child(1){grid-column:1;grid-row:1}
-html.hx-framed .form>.blk:nth-child(2){grid-column:1;grid-row:2}
-html.hx-framed .form>.blk:nth-child(3){grid-column:2;grid-row:1/3;display:flex;flex-direction:column}
-html.hx-framed .form>.blk:nth-child(4){grid-column:1/3;grid-row:3;align-self:stretch}
-html.hx-framed .form>.blk:nth-child(3) label:has(#body){flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-html.hx-framed #body{flex:1 1 auto;min-height:200px;height:auto;resize:none;font-size:15px;line-height:1.7}
-html.hx-framed .form>.blk{padding:8px 12px;gap:5px}
-html.hx-framed .form input[type=text],html.hx-framed .form select{padding:3px 8px;font-size:13px}
-html.hx-framed .form>.blk:nth-child(4) .lbl{display:none}
-html.hx-framed .form>.blk>h2{margin:0}
-html.hx-framed .form .ctadd button,html.hx-framed .form .ct>.btns button{padding:2px 9px;font-size:12px}
-html.hx-framed #toAddr,html.hx-framed #frAddr{height:64px;min-height:64px;padding:4px 8px;font-size:13px;line-height:1.3;resize:none}
-html.hx-framed .form .ct{gap:4px}
-html.hx-framed #toCts,html.hx-framed #frCts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 10px}
-html.hx-framed .crow{grid-template-columns:70px minmax(0,1fr) 22px;gap:4px}
-html.hx-framed .form .row2{gap:6px}
-html.hx-framed .form label{gap:2px}
-html.hx-framed .form>.blk:nth-child(4){display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:6px 20px;align-items:center}
-html.hx-framed .form>.blk:nth-child(4)>h2{grid-column:1/3}
-html.hx-framed .form>.blk:nth-child(4) .sig{gap:10px}
-html.hx-framed .form>.blk:nth-child(4) .thumb{width:60px;height:34px}
-html.hx-framed .form .btns{gap:6px}
-html.hx-framed .form .btns button{padding:4px 10px}
-html.hx-framed .form>.blk:nth-child(1),html.hx-framed .form>.blk:nth-child(2),html.hx-framed .form>.blk:nth-child(4){overflow:visible;min-height:max-content}
-html.hx-framed main>div:last-child{grid-template-rows:auto minmax(0,1fr);height:100%;min-height:0}
-html.hx-framed .stage{overflow:hidden;min-height:0;padding:8px;align-content:center;justify-items:center}
-html.hx-framed .page{width:min(100%,calc((100dvh - 154px)*210/297));max-width:none}
-html.hx-framed .page svg{display:block;width:100%;height:auto;max-height:calc(100dvh - 154px)}
-@media(max-width:1180px){html.hx-framed main{grid-template-columns:minmax(360px,.9fr) minmax(0,1.1fr)}}
+/* ===== Letter embedded in the guideline: ONE definition (12-column grid: edit 4 + preview 8; below 1024px Edit / Preview tabs) =====
+   The page flows at its natural height, so the whole form and the whole A4 page stay reachable. */
+html.hx-framed .wrap{max-width:none;gap:var(--space-4,24px)}
 html.hx-framed details.spec{display:none}
-/* ===== Embedded workspace = 12-column grid: edit 4 columns + preview 8 columns. Below 1024px: Edit / Preview tabs. ===== */
-/* document flows at its natural height: the whole A4 page and the whole form stay reachable */
-html.hx-framed body{height:auto;overflow:visible}
-html.hx-framed .wrap{height:auto;grid-template-rows:none;max-width:none}
-html.hx-framed main{height:auto}
-html.hx-framed .form{height:auto;overflow:visible}
-html.hx-framed main>div:last-child{height:auto;grid-template-rows:none}
-html.hx-framed .stage{overflow:visible;min-height:0;align-content:start;padding:8px 0}
-html.hx-framed .page{width:100%;max-width:none}
-html.hx-framed .page svg{max-height:none}
-/* Zoom like the poster: − 58% + Fit */
+html.hx-framed main{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--grid-gap,24px);align-items:start}
+html.hx-framed .hx-viewtabs{display:none}
+html.hx-framed .form{grid-column:1/span 4;display:flex;flex-direction:column;gap:var(--space-3,16px)}
+html.hx-framed .form>.blk{display:grid;align-content:start;gap:10px;padding:16px 20px 20px}
+html.hx-framed .form>.blk>h2{margin:0}
+html.hx-framed .form label{gap:2px}
+html.hx-framed .form .btns{gap:6px}
+html.hx-framed #body{height:260px;min-height:200px;resize:vertical}
+html.hx-framed #toCts,html.hx-framed #frCts{grid-template-columns:minmax(0,1fr)}
+html.hx-framed .crow{grid-template-columns:104px minmax(0,1fr) 32px;gap:6px}
+html.hx-framed main>div:last-child{grid-column:5/-1}
+/* preview: zoom bar (Fit = 100%) scales the page width */
 .zoombar{display:inline-flex;gap:4px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:3px}
 .zoombar button{border:0;background:none;padding:3px 9px;border-radius:5px;line-height:1.4}
 .zoombar button:hover{background:var(--chip,rgba(0,0,0,.06))}
 .zoombar output{padding:3px 6px;min-width:46px;text-align:center;font-variant-numeric:tabular-nums;color:var(--muted)}
 .stage .page{max-width:calc(640px*var(--z,1))}
+html.hx-framed .stage{align-content:start;overflow-x:auto;padding:8px 0}
 html.hx-framed .stage .page{width:calc(100%*var(--z,1));max-width:none;flex:none}
-html.hx-framed .stage{overflow-x:auto}
+html.hx-framed .page svg{max-height:none}
 .stage[data-zoomed]{justify-items:start}
-
-html.hx-framed main{grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:stretch}
-html.hx-framed .hx-viewtabs{display:none}
-html.hx-framed .form{grid-column:1/span 4;display:flex;flex-direction:column;gap:16px;height:100%;min-height:0;overflow:auto;grid-template:none}
-html.hx-framed .form>.blk:nth-child(n){grid-column:auto;grid-row:auto;display:grid;align-self:auto;overflow:visible;min-height:max-content;padding:16px 20px 20px;gap:10px}
-html.hx-framed .form>.blk:nth-child(3) label:has(#body){display:grid;flex:none}
-html.hx-framed #body{flex:none;height:260px;min-height:200px;resize:vertical}
-html.hx-framed .form>.blk:nth-child(4){grid-template-columns:minmax(0,1fr)}
-html.hx-framed .form>.blk:nth-child(4)>h2{grid-column:auto}
-html.hx-framed .form>.blk:nth-child(4) .lbl{display:block}
-html.hx-framed #toCts,html.hx-framed #frCts{grid-template-columns:minmax(0,1fr)}
-html.hx-framed .crow{grid-template-columns:104px minmax(0,1fr) 32px;gap:6px}
-html.hx-framed main>div:last-child{grid-column:5/-1}
 @media(max-width:1023px){
-  html.hx-framed main{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);row-gap:12px}
+  html.hx-framed main{grid-template-columns:minmax(0,1fr);row-gap:var(--space-3,16px)}
   html.hx-framed .hx-viewtabs{display:flex;flex-wrap:wrap;gap:10px;padding:4px 8px 4px 4px;margin-left:-4px}
   html.hx-framed .form,html.hx-framed main>div:last-child{grid-column:1/-1}
   html.hx-framed main[data-view=edit]>div:last-child{display:none!important}
