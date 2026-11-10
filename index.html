@@ -91,7 +91,6 @@ td:last-child{font-family:var(--font-mono);font-size:var(--fs-small);font-varian
 /* wide workspace: everything on one screen */
 html.hx-framed body{height:100vh;overflow:hidden;padding-block:6px}
 html.hx-framed .wrap{max-width:none;height:100%;grid-template-rows:auto minmax(0,1fr);gap:8px}
-html.hx-framed .hx-steps{display:none!important}
 html.hx-framed header{padding-bottom:8px}
 html.hx-framed main{grid-template-columns:minmax(420px,.82fr) minmax(0,1.18fr);gap:16px;height:100%;min-height:0}
 html.hx-framed .form{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);grid-template-rows:max-content max-content max-content;align-items:stretch;height:100%;min-height:0;gap:10px;overflow:auto}
@@ -126,6 +125,32 @@ html.hx-framed .page{width:min(100%,calc((100dvh - 154px)*210/297));max-width:no
 html.hx-framed .page svg{display:block;width:100%;height:auto;max-height:calc(100dvh - 154px)}
 @media(max-width:1180px){html.hx-framed main{grid-template-columns:minmax(360px,.9fr) minmax(0,1.1fr)}}
 html.hx-framed details.spec{display:none}
+/* ===== Embedded workspace = 12-column grid: edit 4 columns + preview 8 columns. Below 1024px: Edit / Preview tabs. ===== */
+html.hx-framed .wrap{grid-template-rows:auto auto minmax(0,1fr)}
+html.hx-framed main{grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:stretch}
+html.hx-framed .hx-viewtabs{display:none}
+html.hx-framed .form{grid-column:1/span 4;display:flex;flex-direction:column;gap:16px;height:100%;min-height:0;overflow:auto;grid-template:none}
+html.hx-framed .form>.blk:nth-child(n){grid-column:auto;grid-row:auto;display:grid;align-self:auto;overflow:visible;min-height:max-content;padding:16px 20px 20px;gap:10px}
+html.hx-framed .form>.blk:nth-child(3) label:has(#body){display:grid;flex:none}
+html.hx-framed #body{flex:none;height:260px;min-height:200px;resize:vertical}
+html.hx-framed .form>.blk:nth-child(4){grid-template-columns:minmax(0,1fr)}
+html.hx-framed .form>.blk:nth-child(4)>h2{grid-column:auto}
+html.hx-framed .form>.blk:nth-child(4) .lbl{display:block}
+html.hx-framed #toCts,html.hx-framed #frCts{grid-template-columns:minmax(0,1fr)}
+html.hx-framed .crow{grid-template-columns:104px minmax(0,1fr) 32px;gap:6px}
+html.hx-framed main>div:last-child{grid-column:5/-1}
+@media(max-width:1023px){
+  html.hx-framed main{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);row-gap:12px}
+  html.hx-framed .hx-viewtabs{display:flex;flex-wrap:wrap;gap:10px;padding:4px 8px 4px 4px;margin-left:-4px}
+  html.hx-framed .form,html.hx-framed main>div:last-child{grid-column:1/-1}
+  html.hx-framed main[data-view=edit]>div:last-child{display:none!important}
+  html.hx-framed main[data-view=preview]>.form{display:none!important}
+}
+.hx-viewtabs button{display:inline-flex;align-items:center;box-sizing:border-box;margin:0;padding:.45rem .9rem;border:1.5px solid #6b00ff;border-radius:.5rem;background:#fff;color:#000;font:inherit;font-weight:600;line-height:1.25;cursor:pointer;transition:background-color 150ms,box-shadow 150ms,transform 150ms}
+.hx-viewtabs button:hover{background:var(--sub-light,color-mix(in srgb,#64d8d8 15%,#fff));box-shadow:5px 5px 0 var(--sub,#64d8d8);transform:translate(-2px,-2px);border-color:#6b00ff}
+.hx-viewtabs button:active{box-shadow:none;transform:none}
+.hx-viewtabs button[aria-selected=true]{background:var(--sub-medium,color-mix(in srgb,#64d8d8 45%,transparent))}
+.hx-viewtabs button:focus-visible{outline:2px solid #000;outline-offset:2px}
 </style>
 </head>
 <body>
@@ -154,7 +179,7 @@ html.hx-framed details.spec{display:none}
   <main>
     <div class="form">
       <section class="blk">
-        <h2><span data-i="hTo"></span><small>Col 1 · Row 4</small></h2>
+        <h2><span data-i="hTo"></span></h2>
         <div class="row2">
           <label><span data-i="lName"></span><input type="text" id="toName" autocomplete="off"></label>
           <label><span data-i="lTitle"></span><input type="text" id="toTitle" autocomplete="off" list="titles"></label>
@@ -164,7 +189,7 @@ html.hx-framed details.spec{display:none}
       </section>
 
       <section class="blk">
-        <h2><span data-i="hFrom"></span><small>Col 1 · Row 7</small></h2>
+        <h2><span data-i="hFrom"></span></h2>
         <div class="row2">
           <label><span data-i="lName"></span><input type="text" id="frName" autocomplete="off"></label>
           <label><span data-i="lTitle"></span><input type="text" id="frTitle" autocomplete="off" list="titles"></label>
@@ -174,7 +199,7 @@ html.hx-framed details.spec{display:none}
       </section>
 
       <section class="blk">
-        <h2><span data-i="hBody"></span><small>Col 2–4 · Row 4–9</small></h2>
+        <h2><span data-i="hBody"></span></h2>
         <label><span data-i="lSal"></span><input type="text" id="sal" autocomplete="off"></label>
         <label><span data-i="lBody"></span><textarea id="body" rows="14"></textarea></label>
         <p class="note" data-i="bodyNote"></p>
@@ -1132,5 +1157,18 @@ init();
 
 <script src="hcdt-ui.js?v=20261108b" data-tool="letter"></script>
 <script>window.HX_CMYK=['#stage']</script><script src="hcdt-cmyk.js?v=20261105b"></script>
+<script>
+/* Edit / Preview tabs (shown below 1024px) */
+(function(){
+  var m=document.querySelector('main');if(!m)return;
+  var t=document.createElement('div');t.className='hx-viewtabs';t.setAttribute('role','tablist');
+  var names={edit:['Edit','편집'],preview:['Preview','미리보기']};
+  function lab(){var ko=document.documentElement.lang==='ko'||(document.getElementById('lko')&&document.getElementById('lko').getAttribute('aria-pressed')==='true');[].forEach.call(t.children,function(b){b.textContent=names[b.dataset.v][ko?1:0]})}
+  function show(v){m.dataset.view=v;[].forEach.call(t.children,function(b){b.setAttribute('aria-selected',String(b.dataset.v===v))});if(v==='preview')window.dispatchEvent(new Event('resize'))}
+  ['edit','preview'].forEach(function(v){var b=document.createElement('button');b.type='button';b.setAttribute('role','tab');b.dataset.v=v;b.addEventListener('click',function(){show(v)});t.appendChild(b)});
+  m.insertBefore(t,m.firstChild);lab();show('edit');
+  ['lko','len'].forEach(function(i){var e=document.getElementById(i);if(e)e.addEventListener('click',function(){setTimeout(lab,0)})});
+})();
+</script>
 </body>
 </html>

@@ -473,3 +473,6 @@ html:not(#hxt):not(#hxt2):not(#hxt3):not(#hxt4) body .seg button,html:not(#hxt):
 html:not(#hxt):not(#hxt2):not(#hxt3):not(#hxt4) body .seg button,html:not(#hxt):not(#hxt2):not(#hxt3):not(#hxt4) body .hx-toggle-group button{border-radius:9999em!important}
 html:not(#hxt):not(#hxt2):not(#hxt3):not(#hxt4) body .seg button:hover:not([aria-pressed=true]):not([aria-checked=true]),html:not(#hxt):not(#hxt2):not(#hxt3):not(#hxt4) body .hx-toggle-group button:hover:not([aria-pressed=true]):not([aria-checked=true]){background:var(--sub-light,color-mix(in srgb,#64d8d8 15%,transparent))!important;color:#000!important}
 html:not(#hxt):not(#hxt2):not(#hxt3):not(#hxt4) body .seg button[aria-pressed=true],html:not(#hxt):not(#hxt2):not(#hxt3):not(#hxt4) body .seg button[aria-checked=true],html:not(#hxt):not(#hxt2):not(#hxt3):not(#hxt4) body .hx-toggle-group button[aria-pressed=true],html:not(#hxt):not(#hxt2):not(#hxt3):not(#hxt4) body .hx-toggle-group button[aria-pressed=true][data-m=cmyk]{background:var(--sub-medium,color-mix(in srgb,#64d8d8 45%,transparent))!important;box-shadow:inset 0 0 0 1.5px #6b00ff!important;color:#6b00ff!important}
+
+/* Embedded in the guideline: content sits exactly on the page's grid edges (no extra side padding). */
+html.hx-framed body{padding-left:0!important;padding-right:0!important}
