@@ -483,3 +483,7 @@ html.hx-framed body.hx-p-letter{display:block!important;height:auto!important;ov
 html.hx-framed body.hx-p-letter>.wrap{display:grid!important;height:auto!important;min-height:0;grid-template-rows:none!important}
 html.hx-framed body.hx-p-letter>.wrap>main{grid-template-rows:none!important;align-items:start!important;height:auto!important}
 html.hx-framed body.hx-p-letter>.wrap>main>*{overflow:visible!important}
+/* Embedded: no boxed frames around the app, the step guide or the editor (rows are separated by thin dividers only) */
+html.hx-framed .hx-steps{border:0!important;border-radius:0!important}
+html.hx-framed body.hx-p-poster>main.app,html.hx-framed body.hx-p-poster .hx-official,html.hx-framed body.hx-p-slides>.app,html.hx-framed body.hx-p-card .zone{border:0!important;border-radius:0!important}
+html.hx-framed body.hx-p-letter .blk{border:0!important;border-radius:0!important;border-top:1px solid var(--hx-line,#ddd)!important;padding-inline:0!important;background:transparent!important}
