@@ -87,7 +87,7 @@ td:last-child{font-family:var(--font-mono);font-size:var(--fs-small);font-varian
 @media (max-width:420px){.row2{grid-template-columns:minmax(0,1fr)}.stage{padding:10px}}
 </style>
 <link rel="stylesheet" href="hcdt-ui.css?v=20261108c">
-<link rel="stylesheet" href="hcdt-embed.css?v=20261112k">
+<link rel="stylesheet" href="hcdt-embed.css?v=20261112m">
 <style>
 /* ===== Letter embedded in the guideline: ONE definition (12-column grid: edit 4 + preview 8; below 1024px Edit / Preview tabs) =====
    The page flows at its natural height, so the whole form and the whole A4 page stay reachable. */
@@ -112,7 +112,7 @@ html.hx-framed main>div:last-child{grid-column:5/-1}
 .stage .page{max-width:calc(640px*var(--z,1))}
 /* framed preview = the same stage as the Poster editors: grey surface fills the whole column, zoom bar 10px from the top-left corner, page opens at Fit (whole A4 visible) and sits centred */
 html.hx-framed .stagebox{position:relative;min-width:0}
-html.hx-framed .stagebox>.zoombar{position:absolute;top:10px;left:10px;z-index:3;margin:0}
+html.hx-framed .stagebox>.zoombar{position:absolute;top:7px;left:12px;z-index:3;margin:0}
 html.hx-framed .stagebox>.zoombar button,html.hx-framed .stagebox>.zoombar output{font-size:14px}
 html.hx-framed .stage{align-content:start;justify-items:safe center;overflow:auto;border-radius:var(--radius-panel,0);padding:55px 24px 24px;min-height:var(--stage-h,640px)}
 html.hx-framed .stage .page{width:calc(var(--pw,100%)*var(--z,1));max-width:none;flex:none}
