@@ -87,7 +87,7 @@ td:last-child{font-family:var(--font-mono);font-size:var(--fs-small);font-varian
 @media (max-width:420px){.row2{grid-template-columns:minmax(0,1fr)}.stage{padding:10px}}
 </style>
 <link rel="stylesheet" href="hcdt-ui.css?v=20261108c">
-<link rel="stylesheet" href="hcdt-embed.css?v=20261112g">
+<link rel="stylesheet" href="hcdt-embed.css?v=20261112k">
 <style>
 /* ===== Letter embedded in the guideline: ONE definition (12-column grid: edit 4 + preview 8; below 1024px Edit / Preview tabs) =====
    The page flows at its natural height, so the whole form and the whole A4 page stay reachable. */
@@ -213,20 +213,6 @@ html:not(.hx-framed) .stage[data-zoomed]{justify-items:start}
         <span class="cap" id="cap"></span>
       </div>
       <div class="stage" id="stage"></div>
-      <details class="spec">
-        <summary data-i="hSpec"></summary>
-        <div class="tw"><table>
-          <tr><th data-i="thItem"></th><th data-i="thVal"></th></tr>
-          <tr><td data-i="sPage"></td><td>A4 210 × 297 mm</td></tr>
-          <tr><td data-i="sMargin"></td><td data-i="sMarginV"></td></tr>
-          <tr><td data-i="sCol"></td><td>4 × 42.5 mm · 4 mm</td></tr>
-          <tr><td data-i="sRow"></td><td>14 × 15.5 mm · 4 mm</td></tr>
-          <tr><td data-i="sBodyT"></td><td data-i="sBodyV"></td></tr>
-          <tr><td data-i="sHeadT"></td><td>Helvetica Neue LT Std 75 Bold 10 pt</td></tr>
-          <tr><td data-i="sColor"></td><td>UNIST Navy #001B54</td></tr>
-          <tr><td data-i="sZone"></td><td data-i="sZoneV"></td></tr>
-        </table></div>
-      </details>
     </div>
   </main>
 </div>
@@ -887,7 +873,8 @@ const f3=n=>+n.toFixed(3);
 function txt(items,s,x,y,size,bold,alignEnd){
   if(!s)return;
   const f=bold?FB:FR,sh=shape(f,s,size),x0=alignEnd?x-sh.w:x;
-  sh.segs.forEach(g=>items.push({t:g.t,x:x0+g.x,y,size,b:!!bold}));
+  const ln=(txt._n=(txt._n||0)+1);  /* every piece of one line shares ln (Word export joins them again) */
+  sh.segs.forEach(g=>items.push({t:g.t,x:x0+g.x,y,size,b:!!bold,ln}));
 }
 const itemSvg=it=>`<text x="${f3(it.x)}" y="${f3(it.y)}" font-family="${FAM}" font-weight="${it.b?700:400}" font-size="${f3(it.size*PT)}" fill="#000" style="font-kerning:none;white-space:pre">${esc(it.t)}</text>`;
 function gridSvg(){
@@ -1037,7 +1024,10 @@ function dxBgPara(n,rid){
 }
 function dxTextPara(it){
   const x=Math.round(it.x*DX_TW),y=Math.round((it.y-it.size*0.3528*0.8)*DX_TW);
-  const w=Math.max(200,Math.round(it.t.length*it.size*0.6*0.3528*DX_TW));
+  /* the frame must be wider than the text in ANY font Word substitutes for Helvetica Neue (it is wider and the frame would otherwise wrap mid-word): measure the line, add 25% + 1 em, never narrower than the old estimate */
+  const cv=dxTextPara._c||(dxTextPara._c=document.createElement('canvas').getContext('2d'));cv.font=(it.b?'700 ':'400 ')+it.size+'px Arial, "Spoqa Han Sans Neo", sans-serif';
+  const mw=cv.measureText(it.t).width,wpt=Math.max(mw*1.25+it.size,it.t.length*it.size*0.6);
+  const w=Math.max(200,Math.round(wpt*0.3528*DX_TW));
   return `<w:p><w:pPr><w:framePr w:w="${w}" w:wrap="none" w:hAnchor="page" w:vAnchor="page" w:x="${x}" w:y="${y}"/><w:spacing w:before="0" w:after="0" w:line="${Math.round(it.size*1.2*20)}" w:lineRule="exact"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Helvetica Neue" w:hAnsi="Helvetica Neue" w:eastAsia="Spoqa Han Sans Neo"/>${it.b?'<w:b/>':''}<w:sz w:val="${Math.round(it.size*2)}"/></w:rPr><w:t xml:space="preserve">${dxEsc(it.t)}</w:t></w:r></w:p>`;
 }
 async function buildDocx(){
@@ -1049,7 +1039,9 @@ async function buildDocx(){
     const rid='rIdP'+(i+1);
     rels.push(`<Relationship Id="${rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/page${i+1}.png"/>`);
     body+=dxBgPara(i+1,rid);
-    for(const it of m.items) if(it.t&&it.t.trim()) body+=dxTextPara(it);
+    /* the preview splits a line at every kerning pair; Word gets ONE text frame per line (otherwise each piece is wrapped and shifted on its own) */
+    const lines=[];for(const it of m.items){const last=lines[lines.length-1];if(last&&it.ln!==undefined&&last.ln===it.ln&&last.y===it.y)last.t+=it.t;else lines.push({...it})}
+    for(const it of lines) if(it.t&&it.t.trim()) body+=dxTextPara(it);
     if(i<Lo.pages.length-1) body+='<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
   }
   const enc=s=>new TextEncoder().encode(s);
